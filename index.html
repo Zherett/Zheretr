@@ -6,11 +6,23 @@
     <title>Verificador de Espelhamento HDMI</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --background: #f8fafc;
-            --text: #1e293b;
-            --success: #16a34a;
-            --warning: #ea580c;
+            /* Paleta de Cores Tema Escuro */
+            --primary: #3b82f6; /* Azul claro para links e botões */
+            --primary-hover: #2563eb;
+            --background: #0f172a; /* Fundo geral bem escuro */
+            --container-bg: #1e293b; /* Fundo da caixa principal */
+            --text: #f8fafc; /* Texto principal claro */
+            --text-muted: #94a3b8; /* Texto secundário */
+            --border: #334155; /* Cor das bordas */
+            
+            /* Cores de feedback (Sucesso e Aviso) ajustadas para modo escuro */
+            --success-bg: #064e3b;
+            --success-border: #059669;
+            --success-text: #a7f3d0;
+            
+            --warning-bg: #451a03;
+            --warning-border: #b45309;
+            --warning-text: #fde68a;
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -24,10 +36,10 @@
             padding: 20px;
         }
         .container {
-            background: white;
+            background: var(--container-bg);
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
             max-width: 500px;
             width: 100%;
             text-align: center;
@@ -36,52 +48,70 @@
             font-size: 1.5rem;
             margin-bottom: 20px;
         }
+        p {
+            color: var(--text-muted);
+        }
         .search-box {
             position: relative;
             margin-bottom: 20px;
-            text-align: left; /* Para alinhar as sugestões à esquerda */
+            text-align: left;
         }
         input[type="text"] {
             width: 100%;
             padding: 12px;
             font-size: 1rem;
-            border: 2px solid #e2e8f0;
+            background-color: var(--background);
+            color: var(--text);
+            border: 2px solid var(--border);
             border-radius: 8px;
             box-sizing: border-box;
             outline: none;
             transition: border-color 0.3s;
         }
+        input[type="text"]::placeholder {
+            color: #64748b;
+        }
         input[type="text"]:focus {
             border-color: var(--primary);
         }
         
-        /* Estilos do novo menu de sugestões */
         .suggestions-list {
             position: absolute;
             top: 100%;
             left: 0;
             right: 0;
-            background: white;
-            border: 1px solid #e2e8f0;
+            background: var(--container-bg);
+            border: 1px solid var(--border);
             border-top: none;
             border-radius: 0 0 8px 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
             max-height: 200px;
             overflow-y: auto;
             z-index: 10;
-            display: none; /* Escondido por padrão */
+            display: none;
             margin: 0;
             padding: 0;
             list-style: none;
         }
+        /* Estilização da barra de rolagem para combinar com o tema */
+        .suggestions-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        .suggestions-list::-webkit-scrollbar-track {
+            background: var(--container-bg);
+        }
+        .suggestions-list::-webkit-scrollbar-thumb {
+            background-color: var(--border);
+            border-radius: 10px;
+        }
         .suggestions-list li {
             padding: 12px 15px;
             cursor: pointer;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--border);
             color: var(--text);
         }
         .suggestions-list li:hover {
-            background-color: #f1f5f9;
+            background-color: var(--border);
             color: var(--primary);
         }
         .suggestions-list li:last-child {
@@ -101,7 +131,7 @@
             transition: background-color 0.3s;
         }
         button:hover {
-            background-color: #1d4ed8;
+            background-color: var(--primary-hover);
         }
         .result {
             margin-top: 20px;
@@ -112,17 +142,17 @@
             line-height: 1.5;
         }
         .success {
-            background-color: #dcfce7;
-            border: 1px solid var(--success);
-            color: #14532d;
+            background-color: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: var(--success-text);
         }
         .unsupported {
-            background-color: #ffedd5;
-            border: 1px solid var(--warning);
-            color: #7c2d12;
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            color: var(--warning-text);
         }
         a {
-            color: var(--primary);
+            color: #60a5fa; /* Azul mais claro para destacar no fundo escuro */
             text-decoration: none;
             font-weight: bold;
         }
@@ -195,11 +225,9 @@
     const inputElement = document.getElementById('phoneInput');
     const suggestionsList = document.getElementById('suggestionsList');
 
-    // Função que roda toda vez que o usuário digita algo
     inputElement.addEventListener('input', function() {
         const inputValue = this.value.trim().toLowerCase();
         
-        // Limpa a lista de sugestões
         suggestionsList.innerHTML = '';
 
         if (inputValue.length === 0) {
@@ -207,10 +235,8 @@
             return;
         }
 
-        // Separa o que o usuário digitou por espaços (Ex: "galaxy s23" -> ["galaxy", "s23"])
         const searchTerms = inputValue.split(' ').filter(term => term.length > 0);
 
-        // Filtra os aparelhos que contém TODOS os termos digitados
         const filteredPhones = allPhones.filter(phone => {
             const phoneNameLower = phone.toLowerCase();
             return searchTerms.every(term => phoneNameLower.includes(term));
@@ -221,11 +247,10 @@
                 const li = document.createElement('li');
                 li.textContent = phone;
                 
-                // Quando clicar na sugestão...
                 li.addEventListener('click', function() {
-                    inputElement.value = phone; // Preenche o campo
-                    suggestionsList.style.display = 'none'; // Esconde a lista
-                    checkCompatibility(); // Já roda a verificação na hora!
+                    inputElement.value = phone; 
+                    suggestionsList.style.display = 'none'; 
+                    checkCompatibility(); 
                 });
                 
                 suggestionsList.appendChild(li);
@@ -236,19 +261,16 @@
         }
     });
 
-    // Esconder a lista se o usuário clicar fora dela
     document.addEventListener('click', function(event) {
         if (event.target !== inputElement && event.target !== suggestionsList) {
             suggestionsList.style.display = 'none';
         }
     });
 
-    // Lógica de verificação final
     function checkCompatibility() {
         const input = document.getElementById('phoneInput').value.trim();
         const resultBox = document.getElementById('resultBox');
         
-        // Esconde a lista de sugestões ao clicar no botão
         suggestionsList.style.display = 'none';
         
         if (!input) {
@@ -258,7 +280,6 @@
             return;
         }
 
-        // Busca exata para ver de qual lista o aparelho é
         const isDpAlt = dpAltModePhones.find(p => p.toLowerCase() === input.toLowerCase());
         const isMhl = mhlPhones.find(p => p.toLowerCase() === input.toLowerCase());
 
