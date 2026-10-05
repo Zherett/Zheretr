@@ -39,6 +39,7 @@
         .search-box {
             position: relative;
             margin-bottom: 20px;
+            text-align: left; /* Para alinhar as sugestões à esquerda */
         }
         input[type="text"] {
             width: 100%;
@@ -53,6 +54,40 @@
         input[type="text"]:focus {
             border-color: var(--primary);
         }
+        
+        /* Estilos do novo menu de sugestões */
+        .suggestions-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none; /* Escondido por padrão */
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .suggestions-list li {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text);
+        }
+        .suggestions-list li:hover {
+            background-color: #f1f5f9;
+            color: var(--primary);
+        }
+        .suggestions-list li:last-child {
+            border-bottom: none;
+        }
+
         button {
             background-color: var(--primary);
             color: white;
@@ -103,9 +138,8 @@
     <p>Digite o modelo do seu aparelho abaixo:</p>
     
     <div class="search-box">
-        <input type="text" id="phoneInput" list="phoneList" placeholder="Ex: Galaxy S23, iPhone 15...">
-        <!-- O Datalist gera o autocompletar nativo do navegador -->
-        <datalist id="phoneList"></datalist>
+        <input type="text" id="phoneInput" placeholder="Ex: Galaxy S23, iPhone 15..." autocomplete="off">
+        <ul id="suggestionsList" class="suggestions-list"></ul>
     </div>
     
     <button onclick="checkCompatibility()">Verificar Aparelho</button>
@@ -114,7 +148,7 @@
 </div>
 
 <script>
-    // Banco de dados baseado na sua lista
+    // Banco de dados de aparelhos
     const dpAltModePhones = [
         "Samsung Galaxy S8", "Samsung Galaxy S8+", "Samsung Galaxy S8 Active",
         "Samsung Galaxy S9", "Samsung Galaxy S9+", "Samsung Galaxy S10e", "Samsung Galaxy S10", "Samsung Galaxy S10+", "Samsung Galaxy S10 5G", "Samsung Galaxy S10 Lite",
@@ -156,20 +190,66 @@
         "LG Optimus G Pro", "LG G2", "LG G3", "LG G4"
     ];
 
-    // Preencher o datalist (autocompletar)
-    const datalist = document.getElementById('phoneList');
     const allPhones = [...dpAltModePhones, ...mhlPhones].sort();
-    
-    allPhones.forEach(phone => {
-        const option = document.createElement('option');
-        option.value = phone;
-        datalist.appendChild(option);
+
+    const inputElement = document.getElementById('phoneInput');
+    const suggestionsList = document.getElementById('suggestionsList');
+
+    // Função que roda toda vez que o usuário digita algo
+    inputElement.addEventListener('input', function() {
+        const inputValue = this.value.trim().toLowerCase();
+        
+        // Limpa a lista de sugestões
+        suggestionsList.innerHTML = '';
+
+        if (inputValue.length === 0) {
+            suggestionsList.style.display = 'none';
+            return;
+        }
+
+        // Separa o que o usuário digitou por espaços (Ex: "galaxy s23" -> ["galaxy", "s23"])
+        const searchTerms = inputValue.split(' ').filter(term => term.length > 0);
+
+        // Filtra os aparelhos que contém TODOS os termos digitados
+        const filteredPhones = allPhones.filter(phone => {
+            const phoneNameLower = phone.toLowerCase();
+            return searchTerms.every(term => phoneNameLower.includes(term));
+        });
+
+        if (filteredPhones.length > 0) {
+            filteredPhones.forEach(phone => {
+                const li = document.createElement('li');
+                li.textContent = phone;
+                
+                // Quando clicar na sugestão...
+                li.addEventListener('click', function() {
+                    inputElement.value = phone; // Preenche o campo
+                    suggestionsList.style.display = 'none'; // Esconde a lista
+                    checkCompatibility(); // Já roda a verificação na hora!
+                });
+                
+                suggestionsList.appendChild(li);
+            });
+            suggestionsList.style.display = 'block';
+        } else {
+            suggestionsList.style.display = 'none';
+        }
     });
 
-    // Lógica de verificação
+    // Esconder a lista se o usuário clicar fora dela
+    document.addEventListener('click', function(event) {
+        if (event.target !== inputElement && event.target !== suggestionsList) {
+            suggestionsList.style.display = 'none';
+        }
+    });
+
+    // Lógica de verificação final
     function checkCompatibility() {
         const input = document.getElementById('phoneInput').value.trim();
         const resultBox = document.getElementById('resultBox');
+        
+        // Esconde a lista de sugestões ao clicar no botão
+        suggestionsList.style.display = 'none';
         
         if (!input) {
             resultBox.style.display = 'block';
@@ -178,7 +258,7 @@
             return;
         }
 
-        // Verifica de forma insensível a maiúsculas/minúsculas
+        // Busca exata para ver de qual lista o aparelho é
         const isDpAlt = dpAltModePhones.find(p => p.toLowerCase() === input.toLowerCase());
         const isMhl = mhlPhones.find(p => p.toLowerCase() === input.toLowerCase());
 
