@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificador de Espelhamento HDMI</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --background: #f8fafc;
+            --text: #1e293b;
+            --success: #16a34a;
+            --warning: #ea580c;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .success {
+            background-color: #dcfce7;
+            border: 1px solid var(--success);
+            color: #14532d;
+        }
+        .unsupported {
+            background-color: #ffedd5;
+            border: 1px solid var(--warning);
+            color: #7c2d12;
+        }
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Descubra como espelhar seu celular na TV</h1>
+    <p>Digite o modelo do seu aparelho abaixo:</p>
+    
+    <div class="search-box">
+        <input type="text" id="phoneInput" list="phoneList" placeholder="Ex: Galaxy S23, iPhone 15...">
+        <!-- O Datalist gera o autocompletar nativo do navegador -->
+        <datalist id="phoneList"></datalist>
+    </div>
+    
+    <button onclick="checkCompatibility()">Verificar Aparelho</button>
+
+    <div id="resultBox" class="result"></div>
+</div>
+
+<script>
+    // Banco de dados baseado na sua lista
+    const dpAltModePhones = [
+        "Samsung Galaxy S8", "Samsung Galaxy S8+", "Samsung Galaxy S8 Active",
+        "Samsung Galaxy S9", "Samsung Galaxy S9+", "Samsung Galaxy S10e", "Samsung Galaxy S10", "Samsung Galaxy S10+", "Samsung Galaxy S10 5G", "Samsung Galaxy S10 Lite",
+        "Samsung Galaxy S20", "Samsung Galaxy S20+", "Samsung Galaxy S20 Ultra", "Samsung Galaxy S20 FE",
+        "Samsung Galaxy S21", "Samsung Galaxy S21+", "Samsung Galaxy S21 Ultra", "Samsung Galaxy S21 FE",
+        "Samsung Galaxy S22", "Samsung Galaxy S22+", "Samsung Galaxy S22 Ultra",
+        "Samsung Galaxy S23", "Samsung Galaxy S23+", "Samsung Galaxy S23 Ultra", "Samsung Galaxy S23 FE",
+        "Samsung Galaxy S24", "Samsung Galaxy S24+", "Samsung Galaxy S24 Ultra", "Samsung Galaxy S24 FE",
+        "Samsung Galaxy S25", "Samsung Galaxy S25+", "Samsung Galaxy S25 Ultra", "Samsung Galaxy S25 Slim",
+        "Samsung Galaxy S26", "Samsung Galaxy S26+", "Samsung Galaxy S26 Ultra",
+        "Samsung Galaxy Note 8", "Samsung Galaxy Note 9", "Samsung Galaxy Note 10", "Samsung Galaxy Note 10+", "Samsung Galaxy Note 10 Lite",
+        "Samsung Galaxy Note 20", "Samsung Galaxy Note 20 Ultra",
+        "Samsung Galaxy Fold", "Samsung Galaxy Z Fold 2", "Samsung Galaxy Z Fold 3", "Samsung Galaxy Z Fold 4", "Samsung Galaxy Z Fold 5", "Samsung Galaxy Z Fold 6", "Samsung Galaxy Z Fold 7",
+        "Samsung Galaxy Z Flip 6",
+        "Apple iPhone 15", "Apple iPhone 15 Plus", "Apple iPhone 15 Pro", "Apple iPhone 15 Pro Max",
+        "Apple iPhone 16", "Apple iPhone 16 Plus", "Apple iPhone 16 Pro", "Apple iPhone 16 Pro Max",
+        "Apple iPhone 17", "Apple iPhone 17 Slim", "Apple iPhone 17 Pro", "Apple iPhone 17 Pro Max",
+        "Motorola Moto Edge+ (2020)", "Motorola Moto Edge 20 Pro", "Motorola Moto Edge 30 Pro", "Motorola Moto Edge 30 Ultra", "Motorola Moto Edge 40 Pro", "Motorola Moto Edge 50 Pro", "Motorola Moto Edge 50 Ultra",
+        "Motorola Moto G100", "Motorola Moto G200 5G", "Motorola ThinkPhone by Motorola", "Motorola ThinkPhone 25",
+        "LG G5", "LG G6", "LG G7 ThinQ", "LG G8 ThinQ", "LG G8X ThinQ", "LG G8S ThinQ", "LG V20", "LG V30", "LG V30S ThinQ", "LG V40 ThinQ", "LG V50 ThinQ", "LG V60 ThinQ", "LG Velvet", "LG Wing",
+        "ASUS ROG Phone", "ASUS ROG Phone II", "ASUS ROG Phone 3", "ASUS ROG Phone 5", "ASUS ROG Phone 6", "ASUS ROG Phone 7", "ASUS ROG Phone 8", "ASUS ROG Phone 9",
+        "ASUS Zenfone 3 Deluxe", "ASUS Zenfone 9", "ASUS Zenfone 10", "ASUS Zenfone 11 Ultra",
+        "Xiaomi 13 Ultra", "Xiaomi 14 Ultra", "Xiaomi 15 Ultra", "Black Shark 2", "Black Shark 3", "Black Shark 4", "Black Shark 5",
+        "Sony Xperia 1", "Sony Xperia 1 II", "Sony Xperia 1 III", "Sony Xperia 1 IV", "Sony Xperia 1 V", "Sony Xperia 1 VI",
+        "Sony Xperia 5", "Sony Xperia 5 II", "Sony Xperia 5 III", "Sony Xperia 5 IV", "Sony Xperia 5 V", "Sony Xperia Pro", "Sony Xperia Pro-I",
+        "Google Pixel 8", "Google Pixel 8 Pro", "Google Pixel 9", "Google Pixel 9 Pro", "Google Pixel 9 Pro XL", "Google Pixel 9 Pro Fold", "Google Pixel 10", "Google Pixel 10 Pro",
+        "OnePlus 7", "OnePlus 7 Pro", "OnePlus 7T", "OnePlus 7T Pro", "OnePlus 8", "OnePlus 8 Pro", "OnePlus 8T", "OnePlus 9", "OnePlus 9 Pro", "OnePlus 10 Pro", "OnePlus 11", "OnePlus 12", "OnePlus 13", "OnePlus Open",
+        "Huawei Mate 10", "Huawei Mate 10 Pro", "Huawei Mate 20", "Huawei Mate 20 Pro", "Huawei Mate 20 X", "Huawei Mate 30", "Huawei Mate 30 Pro", "Huawei Mate 40", "Huawei Mate 40 Pro", "Huawei Mate 50", "Huawei Mate 50 Pro", "Huawei Mate 60", "Huawei Mate 60 Pro",
+        "Huawei P20", "Huawei P20 Pro", "Huawei P30", "Huawei P30 Pro", "Huawei P40", "Huawei P40 Pro", "Huawei P50", "Huawei P50 Pro", "Huawei P60", "Huawei P60 Pro",
+        "RedMagic 5G", "RedMagic 6", "RedMagic 7", "RedMagic 8 Pro", "RedMagic 9 Pro", "RedMagic 10 Pro",
+        "ZTE Axon 10 Pro", "ZTE Axon 30 Ultra", "ZTE Axon 40 Ultra",
+        "HTC 10", "HTC U11", "HTC U11+", "HTC U12+", "HTC U20 5G"
+    ];
+
+    const mhlPhones = [
+        "Samsung Galaxy S3", "Samsung Galaxy S4", "Samsung Galaxy S4 Zoom", "Samsung Galaxy S5", "Samsung Galaxy S5 Active",
+        "Samsung Galaxy Note 2", "Samsung Galaxy Note 3", "Samsung Galaxy Note 4", "Samsung Galaxy Note Edge",
+        "Motorola Razr HD", "Motorola Moto Maxx",
+        "LG Optimus G Pro", "LG G2", "LG G3", "LG G4"
+    ];
+
+    // Preencher o datalist (autocompletar)
+    const datalist = document.getElementById('phoneList');
+    const allPhones = [...dpAltModePhones, ...mhlPhones].sort();
+    
+    allPhones.forEach(phone => {
+        const option = document.createElement('option');
+        option.value = phone;
+        datalist.appendChild(option);
+    });
+
+    // Lógica de verificação
+    function checkCompatibility() {
+        const input = document.getElementById('phoneInput').value.trim();
+        const resultBox = document.getElementById('resultBox');
+        
+        if (!input) {
+            resultBox.style.display = 'block';
+            resultBox.className = 'result unsupported';
+            resultBox.innerHTML = 'Por favor, digite o modelo do seu aparelho.';
+            return;
+        }
+
+        // Verifica de forma insensível a maiúsculas/minúsculas
+        const isDpAlt = dpAltModePhones.find(p => p.toLowerCase() === input.toLowerCase());
+        const isMhl = mhlPhones.find(p => p.toLowerCase() === input.toLowerCase());
+
+        resultBox.style.display = 'block';
+
+        if (isDpAlt) {
+            resultBox.className = 'result success';
+            resultBox.innerHTML = `<strong>Boas notícias!</strong> O <strong>${isDpAlt}</strong> possui a tecnologia <strong>DP Alt Mode (Tipo C)</strong>. Você só precisa de um cabo Type-C para HDMI padrão. É plugar e usar, sem aplicativos!`;
+        } else if (isMhl) {
+            resultBox.className = 'result success';
+            resultBox.innerHTML = `<strong>Boas notícias!</strong> O <strong>${isMhl}</strong> possui a tecnologia <strong>MHL (Micro USB)</strong>. Você só precisa de um cabo MHL compatível. É plugar e usar!`;
+        } else {
+            resultBox.className = 'result unsupported';
+            resultBox.innerHTML = `
+                O aparelho <strong>${input}</strong> não possui espelhamento automático via cabo nativo.<br><br>
+                Mas não se preocupe! Você pode usar o <strong>Cabo LD39</strong> para resolver isso.<br><br>
+                👉 <a href="LINK_DO_SEU_VIDEO_AQUI" target="_blank">Assista meu vídeo ensinando a usar o LD39</a><br>
+                🛒 <a href="LINK_DO_SEU_TIKTOK_AQUI" target="_blank">Compre o Cabo LD39 com segurança aqui</a>
+            `;
+        }
+    }
+</script>
+
+</body>
+</html>
