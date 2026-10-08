@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificador de Espelhamento HDMI</title>
+    <title>Links - Sr. JOTA</title>
     <style>
         :root {
-            /* Paleta de Cores Tema Escuro */
-            --primary: #3b82f6; /* Azul claro para links e botões */
+            /* Cores Globais e Tela 2 (Escura) */
+            --primary: #3b82f6; 
             --primary-hover: #2563eb;
-            --background: #0f172a; /* Fundo geral bem escuro */
-            --container-bg: #1e293b; /* Fundo da caixa principal */
-            --text: #f8fafc; /* Texto principal claro */
-            --text-muted: #94a3b8; /* Texto secundário */
-            --border: #334155; /* Cor das bordas */
+            --background-dark: #0f172a; 
+            --container-bg: #1e293b; 
+            --text-light: #f8fafc; 
+            --text-muted: #94a3b8; 
+            --border: #334155; 
             
-            /* Cores de feedback (Sucesso e Aviso) ajustadas para modo escuro */
             --success-bg: #064e3b;
             --success-border: #059669;
             --success-text: #a7f3d0;
@@ -23,54 +22,225 @@
             --warning-bg: #451a03;
             --warning-border: #b45309;
             --warning-text: #fde68a;
+
+            /* Cores Tela 1 (Linktree) */
+            --linktree-bg: linear-gradient(135deg, #1e3a8a, #0f172a);
+            --card-bg: linear-gradient(to right, #b9d2eb, #cbe0f5);
+            --card-text: #1e293b;
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--background);
-            color: var(--text);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
+            background: var(--linktree-bg);
+            color: var(--text-light);
+            overflow-x: hidden;
         }
-        .container {
+
+        /* ========================================= */
+        /* ESTILOS DA TELA 1: LINKS DA BIO           */
+        /* ========================================= */
+        #screen-links {
+            width: 100%;
+            max-width: 480px;
+            padding: 40px 20px;
+            display: flex; /* Tela principal visível por padrão */
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .profile-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 15px;
+            background-color: #334155; /* Cor de fundo caso a imagem falhe */
+        }
+
+        .profile-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0 0 5px 0;
+            letter-spacing: 1px;
+        }
+
+        .profile-subtitle {
+            font-size: 1.1rem;
+            color: #93c5fd;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .links-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Estilo dos Botões/Cards */
+        .link-card {
+            background: var(--card-bg);
+            color: var(--card-text);
+            text-decoration: none;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border: none;
+            text-align: left;
+            font-family: inherit;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .link-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .link-card-left-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255,255,255,0.5);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-right: 15px;
+            overflow: hidden;
+        }
+        
+        .link-card-left-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .link-card-left-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: #1e293b;
+        }
+
+        .link-card-text {
+            flex-grow: 1;
+            font-size: 0.95rem;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .link-card-right-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .link-card-right-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: #475569;
+        }
+
+        /* ========================================= */
+        /* ESTILOS DA TELA 2: VERIFICADOR (ESCURO)   */
+        /* ========================================= */
+        #screen-checker {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            display: none; /* Oculto por padrão */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            background-color: var(--background-dark);
+            min-height: 100vh;
+        }
+
+        .back-button {
+            align-self: flex-start;
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 10px 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .back-button:hover {
+            text-decoration: underline;
+        }
+
+        .checker-container {
             background: var(--container-bg);
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-            max-width: 500px;
             width: 100%;
             text-align: center;
+            box-sizing: border-box;
         }
-        h1 {
+
+        .checker-container h1 {
             font-size: 1.5rem;
+            margin-top: 0;
             margin-bottom: 20px;
         }
-        p {
+
+        .checker-container p {
             color: var(--text-muted);
         }
+
         .search-box {
             position: relative;
             margin-bottom: 20px;
             text-align: left;
         }
+
         input[type="text"] {
             width: 100%;
             padding: 12px;
             font-size: 1rem;
-            background-color: var(--background);
-            color: var(--text);
+            background-color: var(--background-dark);
+            color: var(--text-light);
             border: 2px solid var(--border);
             border-radius: 8px;
             box-sizing: border-box;
             outline: none;
             transition: border-color 0.3s;
         }
+
         input[type="text"]::placeholder {
             color: #64748b;
         }
+
         input[type="text"]:focus {
             border-color: var(--primary);
         }
@@ -93,7 +263,7 @@
             padding: 0;
             list-style: none;
         }
-        /* Estilização da barra de rolagem para combinar com o tema */
+
         .suggestions-list::-webkit-scrollbar {
             width: 8px;
         }
@@ -104,21 +274,24 @@
             background-color: var(--border);
             border-radius: 10px;
         }
+
         .suggestions-list li {
             padding: 12px 15px;
             cursor: pointer;
             border-bottom: 1px solid var(--border);
-            color: var(--text);
+            color: var(--text-light);
         }
+
         .suggestions-list li:hover {
             background-color: var(--border);
             color: var(--primary);
         }
+
         .suggestions-list li:last-child {
             border-bottom: none;
         }
 
-        button {
+        .btn-check {
             background-color: var(--primary);
             color: white;
             border: none;
@@ -130,9 +303,11 @@
             font-weight: bold;
             transition: background-color 0.3s;
         }
-        button:hover {
+
+        .btn-check:hover {
             background-color: var(--primary-hover);
         }
+
         .result {
             margin-top: 20px;
             padding: 15px;
@@ -141,44 +316,161 @@
             font-size: 0.95rem;
             line-height: 1.5;
         }
+
         .success {
             background-color: var(--success-bg);
             border: 1px solid var(--success-border);
             color: var(--success-text);
         }
+
         .unsupported {
             background-color: var(--warning-bg);
             border: 1px solid var(--warning-border);
             color: var(--warning-text);
         }
-        a {
-            color: #60a5fa; /* Azul mais claro para destacar no fundo escuro */
+
+        .result a {
+            color: #60a5fa; 
             text-decoration: none;
             font-weight: bold;
         }
-        a:hover {
+
+        .result a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Descubra como espelhar seu celular na TV</h1>
-    <p>Digite o modelo do seu aparelho abaixo:</p>
+<!-- ========================================================================= -->
+<!-- TELA 1: PÁGINA DE LINKS DA BIO                                            -->
+<!-- ========================================================================= -->
+<div id="screen-links">
     
-    <div class="search-box">
-        <input type="text" id="phoneInput" placeholder="Ex: Galaxy S23, iPhone 15..." autocomplete="off">
-        <ul id="suggestionsList" class="suggestions-list"></ul>
+    <!-- Cabeçalho (Foto, Nome e Subtítulo) -->
+    <div class="profile-container">
+        <!-- Substitua o link abaixo pela sua foto real -->
+        <img src="https://p16-common-sign.tiktokcdn.com/tos-alisg-avt-0068/e77e5296fbee351313f6e05466c3b224~tplv-tiktokx-cropcenter:1080:1080.jpeg?dr=14579&refresh_token=732ad93e&x-expires=1791669600&x-signature=ZKnQy5iWbFxhiYats4bFaDGbq1M%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=my2O" alt="Foto de Perfil" class="profile-pic">
+        <h1 class="profile-name">Sr. JOTA</h1>
+        <p class="profile-subtitle">Meus links</p>
     </div>
-    
-    <button onclick="checkCompatibility()">Verificar Aparelho</button>
 
-    <div id="resultBox" class="result"></div>
+    <!-- Lista de Botões -->
+    <div class="links-container">
+
+        <!-- ===================================================================== -->
+        <!-- BOTÃO 1: ABRIR A FERRAMENTA DE VERIFICAÇÃO (MHL/DP ALT MODE)          -->
+        <!-- Nota: Este usa a tag <button> e o onclick="openChecker()"             -->
+        <!-- ===================================================================== -->
+        <button onclick="openChecker()" class="link-card">
+            <!-- Ícone da Esquerda (Celular) -->
+            <div class="link-card-left-icon">
+                <svg viewBox="0 0 24 24"><path d="M17 1H7c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 18H7V5h10v14zm-4.2-5.8l-3.3-3.3-1.4 1.4 4.7 4.7 7-7-1.4-1.4-5.6 5.6z"/></svg>
+            </div>
+            <!-- Texto do Botão -->
+            <span class="link-card-text">Descobrir se meu celular tem tecnologia MHL ou DP Alt Mode agora:</span>
+            <!-- Ícone da Direita (Compartilhar/Seta) -->
+            <div class="link-card-right-icon">
+                <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
+            </div>
+        </button>
+
+
+        <!-- ===================================================================== -->
+        <!-- BOTÃO 2: LINK EXTERNO PARA LOJA (COMPRAR CABO LD39)                   -->
+        <!-- Nota: Este usa a tag <a> com href e target="_blank"                   -->
+        <!-- PARA CRIAR UM NOVO BOTÃO DE LINK, COPIE E COLE TODO ESTE BLOCO ABAIXO -->
+        <!-- ===================================================================== -->
+        <a href="https://s.shopee.com.br/5VVsC3w890" target="_blank" class="link-card">
+            <!-- Ícone ou Imagem da Esquerda -->
+            <div class="link-card-left-icon">
+                <!-- Para usar uma imagem, use a tag img como abaixo. Substitua o src pelo link da imagem do cabo -->
+                <img src="https://down-br.img.susercontent.com/file/br-11134207-7r98o-lsknspvqiln1be>
+            </div>
+            <!-- Texto do Botão -->
+            <span class="link-card-text">COMPRAR Cabo LD39</span>
+            <!-- Ícone da Direita -->
+            <div class="link-card-right-icon">
+                <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
+            </div>
+        </a>
+        <!-- ================= FIM DO BLOCO DO BOTÃO 2 ========================= -->
+
+
+        <!-- ===================================================================== -->
+        <!-- BOTÃO 3: EXEMPLO DE NOVO BOTÃO ADICIONADO FACILMENTE                  -->
+        <!-- ===================================================================== -->
+        <a href="https://vt.tiktok.com/ZSb4HBK6R/" target="_blank" class="link-card">
+            <div class="link-card-left-icon">
+                <svg viewBox="0 0 24 24"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3-5.2 3z"/></svg>
+            </div>
+            <span class="link-card-text">Assista meu último vídeo no TikTok</span>
+            <div class="link-card-right-icon">
+                <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
+            </div>
+        </a>
+        <!-- ================= FIM DO BLOCO DO BOTÃO 3 ========================= -->
+
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- TELA 2: APLICATIVO VERIFICADOR DE ESPELHAMENTO                            -->
+<!-- ========================================================================= -->
+<div id="screen-checker">
+    
+    <!-- Botão de Voltar para a tela de Links -->
+    <button class="back-button" onclick="closeChecker()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Voltar para Meus Links
+    </button>
+
+    <div class="checker-container">
+        <h1>Descubra como espelhar seu celular na TV</h1>
+        <p>Digite o modelo do seu aparelho abaixo:</p>
+        
+        <div class="search-box">
+            <input type="text" id="phoneInput" placeholder="Ex: Galaxy S23, iPhone 15..." autocomplete="off">
+            <ul id="suggestionsList" class="suggestions-list"></ul>
+        </div>
+        
+        <button class="btn-check" onclick="checkCompatibility()">Verificar Aparelho</button>
+
+        <div id="resultBox" class="result"></div>
+    </div>
+
 </div>
 
 <script>
-    // Banco de dados de aparelhos
+    /* ========================================================================= */
+    /* LÓGICA DE TRANSIÇÃO ENTRE TELAS                                           */
+    /* ========================================================================= */
+    const screenLinks = document.getElementById('screen-links');
+    const screenChecker = document.getElementById('screen-checker');
+
+    // Função para mostrar a tela de verificação
+    function openChecker() {
+        screenLinks.style.display = 'none';
+        screenChecker.style.display = 'flex';
+        // Foca automaticamente no campo de pesquisa
+        setTimeout(() => document.getElementById('phoneInput').focus(), 100);
+    }
+
+    // Função para voltar à tela de links
+    function closeChecker() {
+        screenChecker.style.display = 'none';
+        screenLinks.style.display = 'flex';
+        
+        // Opcional: Limpar a busca ao voltar
+        document.getElementById('phoneInput').value = '';
+        document.getElementById('suggestionsList').style.display = 'none';
+        document.getElementById('resultBox').style.display = 'none';
+    }
+
+
+    /* ========================================================================= */
+    /* LÓGICA DO VERIFICADOR (ARRAY, AUTOCOMPLETAR E VERIFICAÇÃO)                */
+    /* ========================================================================= */
     const dpAltModePhones = [
         "Samsung Galaxy S8", "Samsung Galaxy S8+", "Samsung Galaxy S8 Active",
         "Samsung Galaxy S9", "Samsung Galaxy S9+", "Samsung Galaxy S10e", "Samsung Galaxy S10", "Samsung Galaxy S10+", "Samsung Galaxy S10 5G", "Samsung Galaxy S10 Lite",
@@ -225,6 +517,7 @@
     const inputElement = document.getElementById('phoneInput');
     const suggestionsList = document.getElementById('suggestionsList');
 
+    // Lógica de Autocompletar Inteligente
     inputElement.addEventListener('input', function() {
         const inputValue = this.value.trim().toLowerCase();
         
@@ -261,12 +554,14 @@
         }
     });
 
+    // Ocultar sugestões ao clicar fora
     document.addEventListener('click', function(event) {
         if (event.target !== inputElement && event.target !== suggestionsList) {
             suggestionsList.style.display = 'none';
         }
     });
 
+    // Lógica de Verificação
     function checkCompatibility() {
         const input = document.getElementById('phoneInput').value.trim();
         const resultBox = document.getElementById('resultBox');
@@ -296,8 +591,8 @@
             resultBox.innerHTML = `
                 O aparelho <strong>${input}</strong> não possui espelhamento automático via cabo nativo.<br><br>
                 Mas não se preocupe! Você pode usar o <strong>Cabo LD39</strong> para resolver isso.<br><br>
-                👉 <a href="https://vt.tiktok.com/ZSb4HBK6R/" target="_blank">Assista meu vídeo ensinando a usar o LD39</a><br>
-                🛒 <a href="https://s.shopee.com.br/5VVsC3w890" target="_blank">Compre o Cabo LD39 com segurança aqui</a>
+                👉 <a href="LINK_DO_SEU_VIDEO_AQUI" target="_blank">Assista meu vídeo ensinando a usar o LD39</a><br>
+                🛒 <a href="LINK_DO_SEU_TIKTOK_AQUI" target="_blank">Compre o Cabo LD39 com segurança aqui</a>
             `;
         }
     }
